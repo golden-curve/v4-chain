@@ -1,0 +1,174 @@
+# dYdX v4 Perpx-Testnet Docker Compose
+# 4-validator local testnet with 1s block time
+#
+# For indexer services, run the indexer's own docker-compose:
+#   cd ../../../indexer && docker-compose -f docker-compose-local-deployment.yml up -d
+#
+# Usage:
+#   1. Build the Docker image (from protocol directory):
+#      docker build -t dydxprotocol:perpx -f Dockerfile .
+#
+#   2. Run the setup script to initialize validators:
+#      ./perpx-testnet.sh
+#
+#   3. Create data directories:
+#      mkdir -p data/{alice,bob,carl,dave}
+#
+#   4. Start the network:
+#      docker-compose up -d
+#
+#   5. View logs:
+#      docker-compose logs -f dydxprotocold0
+#
+#   6. Stop the network (preserves state):
+#      docker-compose stop
+#
+#   7. Reset the network (deletes state):
+#      docker-compose down
+#      rm -rf ./data/* && ./perpx-testnet.sh
+
+services:
+  # Validator 0 - Alice
+  dydxprotocold0:
+    image: dydxprotocol:perpx
+    command:
+      - start
+      - --log_level
+      - info
+      - --home
+      - /dydxprotocol/chain/.alice
+      - --p2p.persistent_peers
+      - "17e5e45691f0d01449c84fd4ae87279578cdd7ec@dydxprotocold0:26656,b69182310be02559483e42c77b7b104352713166@dydxprotocold1:26656,47539956aaa8e624e0f1d926040e54908ad0eb44@dydxprotocold2:26656,5882428984d83b03d0c907c1f0af343534987052@dydxprotocold3:26656"
+      - --bridge-daemon-eth-rpc-endpoint
+      - "${ETH_RPC_ENDPOINT:-http://host.docker.internal:8545}"
+      - --dd-error-tracking-format
+      - "true"
+      - --max-daemon-unhealthy-seconds
+      - "4294967295"
+      - --grpc-streaming-enabled
+      - "true"
+    environment:
+      - DAEMON_HOME=/dydxprotocol/chain/.alice
+    volumes:
+      - ./data/alice:/dydxprotocol/chain/.alice/data
+      - ./chain/.alice/config:/dydxprotocol/chain/.alice/config
+    ports:
+      - "26656:26656"  # P2P
+      - "26657:26657"  # RPC
+      - "9090:9090"    # gRPC
+      - "9093:9092"    # gRPC streaming
+      - "1317:1317"    # REST API
+      - "8001:8001"    # Metrics
+
+  # Validator 1 - Bob
+  dydxprotocold1:
+    image: dydxprotocol:perpx
+    command:
+      - start
+      - --log_level
+      - error
+      - --home
+      - /dydxprotocol/chain/.bob
+      - --p2p.persistent_peers
+      - "17e5e45691f0d01449c84fd4ae87279578cdd7ec@dydxprotocold0:26656,b69182310be02559483e42c77b7b104352713166@dydxprotocold1:26656,47539956aaa8e624e0f1d926040e54908ad0eb44@dydxprotocold2:26656,5882428984d83b03d0c907c1f0af343534987052@dydxprotocold3:26656"
+      - --bridge-daemon-eth-rpc-endpoint
+      - "${ETH_RPC_ENDPOINT:-http://host.docker.internal:8545}"
+      - --dd-error-tracking-format
+      - "true"
+      - --max-daemon-unhealthy-seconds
+      - "4294967295"
+      - --grpc-streaming-enabled
+      - "true"
+    environment:
+      - DAEMON_HOME=/dydxprotocol/chain/.bob
+    volumes:
+      - ./data/bob:/dydxprotocol/chain/.bob/data
+      - ./chain/.bob/config:/dydxprotocol/chain/.bob/config
+    ports:
+      - "26658:26656"  # P2P
+      - "26659:26657"  # RPC
+
+  # Validator 2 - Carl
+  dydxprotocold2:
+    image: dydxprotocol:perpx
+    command:
+      - start
+      - --log_level
+      - error
+      - --home
+      - /dydxprotocol/chain/.carl
+      - --p2p.persistent_peers
+      - "17e5e45691f0d01449c84fd4ae87279578cdd7ec@dydxprotocold0:26656,b69182310be02559483e42c77b7b104352713166@dydxprotocold1:26656,47539956aaa8e624e0f1d926040e54908ad0eb44@dydxprotocold2:26656,5882428984d83b03d0c907c1f0af343534987052@dydxprotocold3:26656"
+      - --bridge-daemon-eth-rpc-endpoint
+      - "${ETH_RPC_ENDPOINT:-http://host.docker.internal:8545}"
+      - --dd-error-tracking-format
+      - "true"
+      - --max-daemon-unhealthy-seconds
+      - "4294967295"
+      - --grpc-streaming-enabled
+      - "true"
+    environment:
+      - DAEMON_HOME=/dydxprotocol/chain/.carl
+    volumes:
+      - ./data/carl:/dydxprotocol/chain/.carl/data
+      - ./chain/.carl/config:/dydxprotocol/chain/.carl/config
+
+  # Validator 3 - Dave
+  dydxprotocold3:
+    image: dydxprotocol:perpx
+    command:
+      - start
+      - --log_level
+      - error
+      - --home
+      - /dydxprotocol/chain/.dave
+      - --p2p.persistent_peers
+      - "17e5e45691f0d01449c84fd4ae87279578cdd7ec@dydxprotocold0:26656,b69182310be02559483e42c77b7b104352713166@dydxprotocold1:26656,47539956aaa8e624e0f1d926040e54908ad0eb44@dydxprotocold2:26656,5882428984d83b03d0c907c1f0af343534987052@dydxprotocold3:26656"
+      - --bridge-daemon-eth-rpc-endpoint
+      - "${ETH_RPC_ENDPOINT:-http://host.docker.internal:8545}"
+      - --dd-error-tracking-format
+      - "true"
+      - --max-daemon-unhealthy-seconds
+      - "4294967295"
+      - --grpc-streaming-enabled
+      - "true"
+    environment:
+      - DAEMON_HOME=/dydxprotocol/chain/.dave
+    volumes:
+      - ./data/dave:/dydxprotocol/chain/.dave/data
+      - ./chain/.dave/config:/dydxprotocol/chain/.dave/config
+
+  # Slinky Oracle (Price Feed)
+  slinky0:
+    image: ghcr.io/skip-mev/slinky-sidecar:v1.1.0
+    entrypoint: >
+      sh -c "slinky --marketmap-provider dydx_migration_api --oracle-config /etc/slinky/oracle.json --log-std-out-level error"
+    volumes:
+      - ../../contrib/slinky:/etc/slinky
+    ports:
+      - "8080:8080"     # Oracle API
+      - "8002:8002"     # Metrics
+    depends_on:
+      - dydxprotocold0
+
+  # Prometheus (Optional - for metrics)
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ../../contrib/prometheus:/etc/prometheus/
+    ports:
+      - "9091:9090"
+    depends_on:
+      - dydxprotocold0
+
+  # Init service - displays NextBlockDelay configuration info after chain starts
+  init-block-delay:
+    image: dydxprotocol:perpx
+    command: >
+      sh -c "chmod +x /init-script/init-block-delay.sh && /init-script/init-block-delay.sh"
+    volumes:
+      - ./init-block-delay.sh:/init-script/init-block-delay.sh:ro
+      - ./chain/.alice:/dydxprotocol/chain/.alice:ro
+    depends_on:
+      - dydxprotocold0
+    restart: "no"
