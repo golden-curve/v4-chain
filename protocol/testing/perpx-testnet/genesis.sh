@@ -2253,10 +2253,6 @@ function edit_genesis() {
 
 	# Update accountplus module.
 	dasel put -t bool -f "$GENESIS" '.app_state.dydxaccountplus.params.is_smart_account_active' -v 'true'
-
-	# Blocktime module - Set next_block_delay to 200ms for faster block time consistency
-	# This works with timeout_commit=1s in config.toml to achieve ~1s block times
-	dasel put -t string -f "$GENESIS" '.app_state.blocktime.params.synchrony_params.next_block_delay' -v '200ms'
 }
 
 function add_subaccount() {

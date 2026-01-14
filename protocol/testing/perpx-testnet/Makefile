@@ -65,13 +65,24 @@ status: ## Check validator status
 
 ##@ Docker
 
-docker-init: ## Initialize chain for Docker (create data directories)
+docker-build: ## Build the Docker image for perpx-testnet
+	@echo "Building dydxprotocol:perpx Docker image..."
+	@docker build -t dydxprotocol:perpx -f ../../Dockerfile ../../.
+	@echo "✓ Docker image built: dydxprotocol:perpx"
+
+docker-init: docker-build ## Initialize chain for Docker (create data directories)
 	@echo "Creating data directories..."
-	mkdir -p $(DATA_DIR)/{alice,bob,carl,dave}
 	@if [ ! -d "$(CHAIN_DIR)/.alice" ]; then \
 		echo "Initializing genesis..."; \
 		./perpx-testnet.sh; \
 	fi
+	@echo "Syncing data directories..."
+	@for moniker in alice bob carl dave; do \
+		mkdir -p $(DATA_DIR)/$$moniker; \
+		if [ -d "$(CHAIN_DIR)/.$$moniker/data" ]; then \
+			rsync -a --delete $(CHAIN_DIR)/.$$moniker/data/ $(DATA_DIR)/$$moniker/; \
+		fi; \
+	done
 	@echo "✓ Ready for Docker"
 
 docker-up: docker-init ## Start protocol stack with Docker Compose
@@ -102,10 +113,10 @@ docker-logs-prometheus: ## View Prometheus logs
 docker-ps: ## Show running containers
 	docker-compose ps
 
-docker-reset: ## Reset protocol stack (deletes state)
+docker-reset: ## Reset protocol stack (deletes all state, reinitializes genesis)
 	docker-compose down
-	rm -rf $(DATA_DIR)/*
-	@echo "✓ Protocol stack reset"
+	rm -rf $(CHAIN_DIR) $(DATA_DIR)/*
+	@echo "✓ Protocol stack reset (will reinitialize on next start)"
 	@echo "  To restart: make docker-up"
 
 ##@ Indexer (Optional)

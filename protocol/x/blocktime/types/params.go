@@ -28,8 +28,8 @@ func (s SynchronyParams) Validate() error {
 
 func DefaultSynchronyParams() SynchronyParams {
 	return SynchronyParams{
-		// CometBFT defaults back to `timeout_commit` if application sends over
-		// `NextBlockDelay` of 0.
-		NextBlockDelay: 0 * time.Second,
+		// PerpX testnet uses 100ms for fast block times
+		// CometBFT defaults back to `timeout_commit` if NextBlockDelay is 0
+		NextBlockDelay: 100 * time.Millisecond,
 	}
 }
