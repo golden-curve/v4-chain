@@ -160,15 +160,3 @@ services:
       - "9091:9090"
     depends_on:
       - dydxprotocold0
-
-  # Init service - displays NextBlockDelay configuration info after chain starts
-  init-block-delay:
-    image: dydxprotocol:perpx
-    command: >
-      sh -c "chmod +x /init-script/init-block-delay.sh && /init-script/init-block-delay.sh"
-    volumes:
-      - ./init-block-delay.sh:/init-script/init-block-delay.sh:ro
-      - ./chain/.alice:/dydxprotocol/chain/.alice:ro
-    depends_on:
-      - dydxprotocold0
-    restart: "no"
