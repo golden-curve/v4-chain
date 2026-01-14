@@ -94,6 +94,11 @@ install_prerequisites() {
 		go install github.com/tomwright/dasel/v2/cmd/dasel@latest
 	fi
 
+  if ! command -v cosmovisor &> /dev/null; then
+    echo "cosmovisor not found. Installing..."
+    go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@latest
+  fi
+
 	if ! command -v jq &> /dev/null; then
 		echo "jq not found. Installing..."
 		if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -158,6 +163,8 @@ create_validators() {
 		update_genesis_use_test_volatile_market "$VAL_CONFIG_DIR"
 		update_genesis_complete_bridge_delay "$VAL_CONFIG_DIR" "30"
 
+		# Delete existing key if it exists (from previous run)
+		dydxprotocold keys delete "${MONIKERS[$i]}" --keyring-backend=test --home "$VAL_HOME_DIR" --yes 2>/dev/null || true
 		echo "${MNEMONICS[$i]}" | dydxprotocold keys add "${MONIKERS[$i]}" --recover --keyring-backend=test --home "$VAL_HOME_DIR"
 
 		for acct in "${TEST_ACCOUNTS[@]}"; do
