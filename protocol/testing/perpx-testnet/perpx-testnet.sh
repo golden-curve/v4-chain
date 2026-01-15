@@ -12,8 +12,8 @@ source "../genesis.sh"
 CHAIN_ID="localdydxprotocol"
 
 # PerpX testnet token configuration (override parent's dv4tnt)
-NATIVE_TOKEN="perpxtt"
-NATIVE_TOKEN_WHOLE_COIN="perpxtt"
+NATIVE_TOKEN="adv4tnt"
+NATIVE_TOKEN_WHOLE_COIN="dv4tnt"
 COIN_NAME="PerpX Testnet Token"
 
 # Define mnemonics for all validators.
@@ -109,21 +109,21 @@ install_prerequisites() {
 	fi
 }
 
-# Fix denom metadata for perpxtt token.
-# Since NATIVE_TOKEN == NATIVE_TOKEN_WHOLE_COIN, we need a single denom unit.
-fix_denom_metadata() {
-	local GENESIS=$1/genesis.json
+# # Fix denom metadata for perpxtt token.
+# # Since NATIVE_TOKEN == NATIVE_TOKEN_WHOLE_COIN, we need a single denom unit.
+# fix_denom_metadata() {
+# 	local GENESIS=$1/genesis.json
 
-	# Replace denom_metadata with single entry for perpxtt
-	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].description' -v "The native token of PerpX testnet"
-	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].base' -v "$NATIVE_TOKEN"
-	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].name' -v "$COIN_NAME"
-	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].symbol' -v "$NATIVE_TOKEN"
-	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].display' -v "$NATIVE_TOKEN"
+# 	# Replace denom_metadata with single entry for perpxtt
+# 	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].description' -v "The native token of PerpX testnet"
+# 	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].base' -v "$NATIVE_TOKEN"
+# 	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].name' -v "$COIN_NAME"
+# 	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].symbol' -v "$NATIVE_TOKEN"
+# 	dasel put -t string -f "$GENESIS" '.app_state.bank.denom_metadata.[0].display' -v "$NATIVE_TOKEN"
 
-	# Single denom unit since base == display (no exponent conversion)
-	dasel put -t json -f "$GENESIS" '.app_state.bank.denom_metadata.[0].denom_units' -v '[{"denom":"perpxtt","exponent":0,"aliases":[]}]'
-}
+# 	# Single denom unit since base == display (no exponent conversion)
+# 	dasel put -t json -f "$GENESIS" '.app_state.bank.denom_metadata.[0].denom_units' -v '[{"denom":"perpxtt","exponent":0,"aliases":[]}]'
+# }
 
 # Create all validators for the chain including a full-node.
 # Initialize their genesis files and home directories.
@@ -157,8 +157,8 @@ create_validators() {
 		# Note: `edit_genesis` must be called before `add-genesis-account`.
 		edit_genesis "$VAL_CONFIG_DIR" "" "${FAUCET_ACCOUNTS[*]}" "${VAULT_ACCOUNTS[*]}" "${VAULT_NUMBERS[*]}" "" "" "" ""
 
-		# Fix denom metadata for perpxtt token (since base == display)
-		fix_denom_metadata "$VAL_CONFIG_DIR"
+		# # Fix denom metadata for perpxtt token (since base == display)
+		# fix_denom_metadata "$VAL_CONFIG_DIR"
 
 		update_genesis_use_test_volatile_market "$VAL_CONFIG_DIR"
 		update_genesis_complete_bridge_delay "$VAL_CONFIG_DIR" "30"
