@@ -23,8 +23,9 @@ build: ## Build the dydxprotocold binary
 	cd ../../.. && make install
 
 install: ## Install dydxprotocold to Go bin
+	sudo apt-get update && sudo apt-get install -y build-essential
 	@echo "Installing dydxprotocold..."
-	go install -mod=readonly -tags "netgo" -ldflags '-w -s' -trimpath ../../../protocol/cmd/dydxprotocold
+	cd ../../../protocol/cmd/dydxprotocold && CGO_ENABLED=1 go install -mod=readonly -ldflags '-w -s' -trimpath .
 
 ##@ Genesis
 
