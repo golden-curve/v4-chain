@@ -55,10 +55,10 @@ services:
     ports:
       - "26656:26656"  # P2P
       - "26657:26657"  # RPC
-      - "9090:9090"    # gRPC
+      - "9094:9090"    # gRPC
       - "9093:9092"    # gRPC streaming
       - "1317:1317"    # REST API
-      - "8001:8001"    # Metrics
+      - "8001:26660"   # Metrics (CometBFT Prometheus)
 
   # Validator 1 - Bob
   dydxprotocold1:
@@ -146,7 +146,7 @@ services:
     volumes:
       - ../../contrib/slinky:/etc/slinky
     ports:
-      - "8080:8080"     # Oracle API
+      - "8081:8080"     # Oracle API
       - "8002:8002"     # Metrics
     depends_on:
       - dydxprotocold0
