@@ -24,7 +24,7 @@ build: ## Build the dydxprotocold binary
 
 install: ## Install dydxprotocold to Go bin
 	@echo "Installing dydxprotocold..."
-	go install -mod=readonly -tags "netgo" -ldflags '-w -s' -trimpath ../../../../cmd/dydxprotocold
+	go install -mod=readonly -tags "netgo" -ldflags '-w -s' -trimpath ../../../protocol/cmd/dydxprotocold
 
 ##@ Genesis
 
